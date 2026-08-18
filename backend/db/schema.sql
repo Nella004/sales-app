@@ -1,0 +1,20 @@
+CREATE TABLE vendors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    business_info TEXT,
+    id_number VARCHAR(100),
+    verification_status VARCHAR(20) DEFAULT 'unverified', -- unverified | pending | verified 
+    bank_account_ref VARCHAR(255), -- placeholder for bank details
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ledger_entries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vendor_id INTEGER,
+    type VARCHAR(20) NOT NULL, -- 'received' | 'released' | 'refund' 
+    amount NUMERIC(12, 2) NOT NULL,
+    payment_status VARCHAR(20) DEFAULT 'pending', -- pending | held | released | failure 
+    reference_id VARCHAR(100), -- external/mock transfer id 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vendor_id) REFERENCES vendors(id)
+);
