@@ -2,3 +2,23 @@ node_modules/
 .env
 build/
 .dart_tool/
+
+#Out of Scope Platforms
+frontend/windows/
+frontend/macos/
+frontend/linux/
+frontend/web/
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+frontend/android/.gradle/
+frontend/android/local.properties
+
+#ios
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/ios/Flutter/Flutter.podspec
+*.xcworkspace
+*.xcuserdata
