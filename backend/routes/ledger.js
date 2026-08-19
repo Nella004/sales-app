@@ -20,12 +20,22 @@ module.exports = (pool) => {
             return res.status(403).json({ error: 'Vendor not verified' });
         }
 
+        //Paypals standards are 2.9% + $0.30
+        const feeRate = 0.029;
+        const fixedFee = 0.30;
+        const fee = Math.round((amount * feeRate + fixedFee) * 100) / 100;
+        const netAmount = Math.round((amount - fee) * 100) / 100;
+
+        if (netAmount <= 0) {
+            return res.status(400).json({ error: 'Amount too small to cover fees' });
+        }
+
         const [result] = await pool.query(
-            `INSERT INTO ledger_entries (vendor_id, type, amount, status)
-            VALUES (?, 'released', ?, 'released')`,
-            [vendor_id, amount]
+            `INSERT INTO ledger_entries (vendor_id, type, amount, fee, status)
+            VALUES (?, 'released', ?, ?, 'released')`,
+            [vendor_id, netAmount, fee]
         );
-        res.json({ id: result.insertId, status: 'released' });
+        res.json({ id: result.insertId, status: 'released', gross_amount: 'amount', fee, net_amount: 'netAmount' });
     });
 
     router.get('/vendors/ :id/balance', async (req, res) => {

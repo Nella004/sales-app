@@ -18,3 +18,5 @@ CREATE TABLE ledger_entries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (vendor_id) REFERENCES vendors(id)
 );
+
+ALTER TABLE ledger_entries ADD COLUMN fee DECIMAL(12,2) DEFAULT 0.00;
