@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
+import 'screens/payout_screen.dart';
+import 'screens/vendor_form_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -39,7 +41,24 @@ class _VendorListScreenState extends State<VendorListScreen> {
       itemBuilder: (ctx, i) => ListTile(
         title: Text(vendors[i]['name']),
         subtitle: Text('Status: ${vendors[i]['verification_status']}'),
+        onTap: () async {
+          await Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (_) => PayoutScreen(vendor: vendors[i]))
+          );
+          loadVendors(); //to refresh the status after returning
+        },
       )
+    ),
+    floatingActionButton: FloatingActionButton(
+      child: Icon(Icons.add),
+      onPressed: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => VendorFormScreen()),
+        );
+        if (refresh == true) loadVendors();
+      },
     ),
   );
 }

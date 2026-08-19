@@ -18,8 +18,36 @@ class ApiService {
     return jsonDecode(res.body);
   }
 
+  static Future<Map<String, dynamic>> verifyVendor(int vendorId, String status) async {
+    final res = await http.patch(
+      Uri.parse('$baseUrl/vendors/$vendorId/verify'),
+      headers: { 'Content-Type': 'application/json'},
+      body: jsonEncode({'status': status}), //meaning verified or unverified
+    );
+    return jsonDecode(res.body);
+  }
+
   static Future<Map<String, dynamic>> getBalance(int vendorId) async {
     final res = await http.get(Uri.parse('$baseUrl/vendors/$vendorId/balance'));
+    return jsonDecode(res.body);
+  }
+
+  static Future<Map<String, dynamic>> releasefunds(int vendorId, double amount) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/transfers/release'),
+      headers: { 'Content-Type': 'application/json'},
+      body: jsonEncode({'vendorId': vendorId, 'amount': amount}), //meaning verified or unverified
+    );
+    return jsonDecode(res.body);
+  }
+
+  //To simulate payment landing in escrow (stand in for processor webhook)
+  static Future<Map<String, dynamic>> receivefunds(int vendorId, double amount, String referenceId) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/transfers/receive'),
+      headers: { 'Content-Type': 'application/json'},
+      body: jsonEncode({'vendorId': vendorId, 'amount': amount, 'reference_id': referenceId}), //meaning verified or unverified
+    );
     return jsonDecode(res.body);
   }
 }
