@@ -25,6 +25,6 @@ module.exports = (pool) => {
         );
         
         res.json({ status: 'recorded', ledger_updated: true});
-    });
+    });   
     return router;
 };
