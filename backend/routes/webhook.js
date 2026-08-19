@@ -6,11 +6,12 @@ module.exports = (pool) => {
     //simulate incoming webhook from a payment processor
     router.post('/webhooks/payment', async (req, res) => {
         const { vendor_id, amount, reference_id, event_type } = req.body;
+        const event_type = req.body.event_type || 'payment.succeeded'; //UI call
 
         await pool.query(
             `INSERT INTO processor_records (vendor_id, amount, reference_id, event_type)
             VALUES (?, ?, ?, ?)`,
-            [vendor_id, amount, reference_id, event_type || 'payment.succeeded']
+            [vendor_id, amount, reference_id, event_type]
         );
 
         //Only creditting the ledger if the processor says it succeeded

@@ -44,10 +44,16 @@ class ApiService {
   //To simulate payment landing in escrow (stand in for processor webhook)
   static Future<Map<String, dynamic>> receivefunds(int vendorId, double amount, String referenceId) async {
     final res = await http.post(
-      Uri.parse('$baseUrl/transfers/receive'),
+      Uri.parse('$baseUrl/webhooks/payment'),
       headers: { 'Content-Type': 'application/json'},
       body: jsonEncode({'vendorId': vendorId, 'amount': amount, 'reference_id': referenceId}), //meaning verified or unverified
     );
+    return jsonDecode(res.body);
+  }
+
+  static Future<Map<String, dynamic>> reconcile() async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/reconcile'),);
     return jsonDecode(res.body);
   }
 }

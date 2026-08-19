@@ -3,16 +3,6 @@ const express = require('express');
 module.exports = (pool) => {
     const router = express.Router();
 
-    router.post('/transfers/receive', async (req, res) => {
-        const { vendor_id, amount } = req.body;
-        const [vendor] = await pool.query(
-            `INSERT INTO ledger_entries (vendor_id, type, amount, payment_status, reference_id)
-            VALUES (?, 'received', ?, 'held', ?)`,
-            [vendor_id, amount, reference_id]
-        );
-        res.json({ id: result.insertId, status: 'held' });
-    });
-
     router.post('/tranfers/release', async (req, res) => {
         const { vendor_id, amount } = req.body;
         const [vendor] = await pool.query(`SELECT verification_status FROM vendors WHERE id = ?`, [vendor_id]);
