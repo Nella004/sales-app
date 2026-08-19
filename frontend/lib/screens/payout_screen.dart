@@ -37,10 +37,11 @@ class _PayoutScreenState extends State<PayoutScreen> {
     if (amount == null) return;
     
     try {
-      await ApiService.releasefunds(widget.vendor['id'], amount);
+      final result = await ApiService.releasefunds(widget.vendor['id'], amount);
       loadBalance();
       ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Released \$${amount.toStringAsFixed(2)}')));
+        .showSnackBar(SnackBar(content: Text('Released \$${result['net_amount']} (fee: \$${result['fee']})'),
+        ));
     }catch (e) {
       ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Released failed: $e')));
