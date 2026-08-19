@@ -5,7 +5,7 @@ module.exports = (pool) => {
 
     //simulate incoming webhook from a payment processor
     router.post('/webhooks/payment', async (req, res) => {
-        const { vendor_id, amount, reference_id, event_type } = req.body;
+        const { vendor_id, amount, reference_id } = req.body;
         const event_type = req.body.event_type || 'payment.succeeded'; //UI call
 
         await pool.query(
