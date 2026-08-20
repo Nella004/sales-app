@@ -22,7 +22,7 @@ class ApiService {
     final res = await http.patch(
       Uri.parse('$baseUrl/vendors/$vendorId/verify'),
       headers: { 'Content-Type': 'application/json'},
-      body: jsonEncode({'status': status}), //meaning verified or unverified
+      body: jsonEncode({'status': status}),
     );
     return jsonDecode(res.body);
   }
@@ -36,24 +36,25 @@ class ApiService {
     final res = await http.post(
       Uri.parse('$baseUrl/transfers/release'),
       headers: { 'Content-Type': 'application/json'},
-      body: jsonEncode({'vendorId': vendorId, 'amount': amount}), //meaning verified or unverified
+      // 🚀 Fixed: Changed 'vendorId' to 'vendor_id' to match req.body in routes/ledger.js
+      body: jsonEncode({'vendor_id': vendorId, 'amount': amount}), 
     );
     return jsonDecode(res.body);
   }
 
-  //To simulate payment landing in escrow (stand in for processor webhook)
+  // To simulate payment landing in escrow (stand in for processor webhook)
   static Future<Map<String, dynamic>> receivefunds(int vendorId, double amount, String referenceId) async {
     final res = await http.post(
       Uri.parse('$baseUrl/webhooks/payment'),
       headers: { 'Content-Type': 'application/json'},
-      body: jsonEncode({'vendorId': vendorId, 'amount': amount, 'reference_id': referenceId}), //meaning verified or unverified
+      // 🚀 Fixed: Changed 'vendorId' to 'vendor_id' to match req.body in routes/webhook.js
+      body: jsonEncode({'vendor_id': vendorId, 'amount': amount, 'reference_id': referenceId}), 
     );
     return jsonDecode(res.body);
   }
 
   static Future<Map<String, dynamic>> reconcile() async {
-    final res = await http.get(
-      Uri.parse('$baseUrl/reconcile'),);
+    final res = await http.get(Uri.parse('$baseUrl/reconcile'));
     return jsonDecode(res.body);
   }
 }

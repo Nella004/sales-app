@@ -31,7 +31,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
       final data = await ApiService.getBalance(widget.vendor['id']);
       setState(() => balance = data);
     } catch (e) {
-      //balance will be null, UI will show "unavailable"
+        print('Balance failed to load: $e');
+        AppSnackbar.error(context, 'Balance failed to load: $e');
     }
   }
 
@@ -126,14 +127,14 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 Expanded(
                   child: _BalanceStat(
                     label: 'Held',
-                    value: balance != null ? '\$${balance!['held']}' : 'â€',
+                    value: balance != null ? '\$${balance!['held']}' : '-',
                   ),
                 ),
                 Container(width: 1, height: 40, color: Colors.white.withOpacity(0.25)),
                 Expanded(
                   child: _BalanceStat(
                     label: 'Released',
-                    value: balance != null ? '\$${balance!['released']}' : 'â€',
+                    value: balance != null ? '\$${balance!['released']}' : '-',
                   ),
                 ),
               ],

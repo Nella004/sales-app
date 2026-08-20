@@ -3,7 +3,7 @@ import '../theme.dart';
 import '../app_snackbar.dart';
 import '../api_service.dart';
 
-class ReceiveFundsScreen extends StatefulWidget{
+class ReceiveFundsScreen extends StatefulWidget {
   final Map<String, dynamic> vendor;
   ReceiveFundsScreen({required this.vendor});
 
@@ -19,6 +19,7 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
   void submit() async {
     final amount = double.tryParse(amountCtrl.text);
     if (amount == null) {
+      // ✅ Matches your exact app_snackbar.dart layout setup
       AppSnackbar.error(context, 'Enter a valid amount');
       return;
     }
@@ -26,8 +27,9 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
     setState(() => submitting = true);
     try {
       await ApiService.receivefunds(widget.vendor['id'], amount, referenceCtrl.text);
-      if (mounted) Navigator.pop(context, true); //meaning true = refresh balance on return
+      if (mounted) Navigator.pop(context, true); // true = refresh balance on return
     } catch (e) {
+        // ✅ Matches your exact app_snackbar.dart layout setup
         AppSnackbar.error(context, 'Failed to receive funds: $e');
     } finally {
       if (mounted) setState(() => submitting = false);
@@ -54,7 +56,7 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Stand in for the payment processor webhook â€" in production this fires automatically.',
+                    'Stand in for the payment processor webhook – in production this fires automatically.',
                     style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                   ),
                 ),
@@ -68,10 +70,22 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: const TextStyle(color: AppTheme.textPrimary),
             decoration: const InputDecoration(
+              labelText: 'Amount Received',
+              prefixText: '\$',
+            ),
+          ),
+
+          const SizedBox(height: 14),
+          TextField(
+            controller: referenceCtrl,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: const InputDecoration(
               labelText: 'Reference ID (mock transaction id)',
               prefixIcon: Icon(Icons.tag_rounded),
             ),
           ),
+
           const SizedBox(height: 28),
           ElevatedButton(
             onPressed: submitting ? null : submit, 
@@ -81,7 +95,7 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                    : const Text('Simulate Payment Received'),
+              : const Text('Simulate Payment Received'),
           ),
         ],
       ),
