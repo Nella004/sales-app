@@ -1,10 +1,12 @@
 const express = require('express');
+const { initiateTransfer } = require('../services.js/mockProcessor');
 
 module.exports = (pool) => {
     const router = express.Router();
 
     router.post('/tranfers/release', async (req, res) => {
         const { vendor_id, amount } = req.body;
+
         const [vendor] = await pool.query(`SELECT verification_status FROM vendors WHERE id = ?`, [vendor_id]);
         if (vender[0]?.verification_status !== 'verified') {
             return res.status(403).json({ error: 'Vendor not verified' });
@@ -20,12 +22,20 @@ module.exports = (pool) => {
             return res.status(400).json({ error: 'Amount too small to cover fees' });
         }
 
+        const transfer = await initiateTransfer(vendor_id, netAmount);
+
         const [result] = await pool.query(
-            `INSERT INTO ledger_entries (vendor_id, type, amount, fee, payment_status)
-            VALUES (?, 'released', ?, ?, 'released')`,
-            [vendor_id, netAmount, fee]
+            `INSERT INTO ledger_entries (vendor_id, type, amount, fee, payment_status, reference_id)
+            VALUES (?, 'released', ?, ?, ?, ?')`,
+            [vendor_id, netAmount, fee, transfer.status === 'completed' ? 'released' : 'failed', transfer.transfer_id]
         );
-        res.json({ id: result.insertId, status: 'released', gross_amount: 'amount', fee, net_amount: 'netAmount' });
+        res.json({ 
+            id: result.insertId, 
+            status: transfer.status === 'completed' ? 'released' : 'failed', 
+            gross_amount: 'amount', fee, 
+            net_amount: 'netAmount',
+            transfer_id: transfer.transfer_id
+        });
     });
 
     router.get('/vendors/ :id/balance', async (req, res) => {

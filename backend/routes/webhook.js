@@ -1,4 +1,5 @@
 const express = require('express');
+const { initiateDeposit } = require('../services.js/mockProcessor');
 
 module.exports = (pool) => {
     const router = express.Router();
@@ -20,13 +21,15 @@ module.exports = (pool) => {
             return res.json({ status: 'recorded', ledger_updated: 'false'});
         }
 
+        const deposit = await initiateDeposit(vendor_id, amount, reference_id);
+
         await pool.query(
             `INSERT INTO ledger_entries (vendor_id, type, amount, payment_status, reference_id)
             VALUES (?, 'received', ?, 'held', ?)`,
-            [vendor_id, amount, reference_id]
+            [vendor_id, amount, deposit.reference_id]
         );
         
-        res.json({ status: 'recorded', ledger_updated: true});
+        res.json({ status: 'recorded', ledger_updated: true, transfer_id: deposit.transfer_id});
     });   
     return router;
 };
