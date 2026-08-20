@@ -5,6 +5,7 @@ module.exports = (pool) => {
 
     //simulate incoming webhook from a payment processor
     router.post('/webhooks/payment', async (req, res) => {
+
         const { vendor_id, amount, reference_id } = req.body;
         const event_type = req.body.event_type || 'payment.succeeded'; //UI call
 
@@ -20,7 +21,7 @@ module.exports = (pool) => {
         }
 
         await pool.query(
-            `INSERT INTO ledger_entries (vendor_id, type, amount, status, reference_id)
+            `INSERT INTO ledger_entries (vendor_id, type, amount, payment_status, reference_id)
             VALUES (?, 'received', ?, 'held', ?)`,
             [vendor_id, amount, reference_id]
         );

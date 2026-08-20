@@ -17,4 +17,4 @@ app.use('/api', require('./routes/ledger.js')(pool));
 app.use('/api', require('./routes/webhook.js')(pool));
 app.use('/api', require('./routes/reconcile.js')(pool));
 
-app.listen(300, '0.0.0.0', () => console.log('API running on port 3000'));
+app.listen(3000, '0.0.0.0', () => console.log('API running on port 3000'));

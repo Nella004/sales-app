@@ -13,7 +13,7 @@ module.exports = (pool) => {
         res.json({ id: result.insertId, name, verification_status: 'pending' });
     });
 
-    router.patch('/vendors/ :id/verify', async (req, res) => {
+    router.patch('/vendors/:id/verify', async (req, res) => {
         const { status } = req.body;
         await pool.query(`UPDATE vendors SET verification_status = ? WHERE id = ?`, [status, req.params.id]);
         res.json({ id: req.params.id, verification_status: status });

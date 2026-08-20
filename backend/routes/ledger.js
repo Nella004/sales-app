@@ -21,7 +21,7 @@ module.exports = (pool) => {
         }
 
         const [result] = await pool.query(
-            `INSERT INTO ledger_entries (vendor_id, type, amount, fee, status)
+            `INSERT INTO ledger_entries (vendor_id, type, amount, fee, payment_status)
             VALUES (?, 'released', ?, ?, 'released')`,
             [vendor_id, netAmount, fee]
         );
@@ -31,8 +31,8 @@ module.exports = (pool) => {
     router.get('/vendors/ :id/balance', async (req, res) => {
         const [rows] = await pool.query(
             `SELECT
-                COALESCE(SUM(CASE WHEN status = 'held' THEN amount ELSE 0  END), 0) AS held,
-                COALESCE(SUM(CASE WHEN status = 'released' THEN amount ELSE 0 END), 0) AS released
+                COALESCE(SUM(CASE WHEN payment_status = 'held' THEN amount ELSE 0  END), 0) AS held,
+                COALESCE(SUM(CASE WHEN payment_status = 'released' THEN amount ELSE 0 END), 0) AS released
             FROM ledger_entries WHERE vendor_id = ?`
             [req.params.id]
         );
