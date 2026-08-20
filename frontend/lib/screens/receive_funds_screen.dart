@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../theme.dart';
+import '../app_snackbar.dart';
 import '../api_service.dart';
 
 class ReceiveFundsScreen extends StatefulWidget{
@@ -16,15 +18,17 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
 
   void submit() async {
     final amount = double.tryParse(amountCtrl.text);
-    if (amount == null) return;
-    setState(() => submitting = true);
+    if (amount == null) {
+      AppSnackbar.error(context, 'Enter a valid amount');
+      return;
+    }
 
+    setState(() => submitting = true);
     try {
       await ApiService.receivefunds(widget.vendor['id'], amount, referenceCtrl.text);
       if (mounted) Navigator.pop(context, true); //meaning true = refresh balance on return
     } catch (e) {
-      ScaffoldMessenger.of(context)
-      .showSnackBar(SnackBar(content: Text('Failed to receive funds: $e')));
+        AppSnackbar.error(context, 'Failed to receive funds: $e');
     } finally {
       if (mounted) setState(() => submitting = false);
     }
@@ -32,29 +36,53 @@ class _ReceiveFundsScreenState extends State<ReceiveFundsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-     appBar: AppBar(title: Text('Simulate Payment Received')),
+    appBar: AppBar(title: const Text('Simulate Payment Received')),
     body: Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Stand=in for a payment processor webhook - in production, this call would be triggered automatically, not tapped by a person.',
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceAlt,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.webhook_rounded, size: 18, color: AppTheme.textSecondary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Stand in for the payment processor webhook â€" in production this fires automatically.',
+                    style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 16),
+
+          const SizedBox(height: 24),
           TextField(
             controller: amountCtrl,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Amount received '),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: const InputDecoration(
+              labelText: 'Reference ID (mock transaction id)',
+              prefixIcon: Icon(Icons.tag_rounded),
+            ),
           ),
-          TextField(
-            controller: referenceCtrl,
-            decoration: InputDecoration(labelText: 'Reference ID (mock transaction id)'),
+          const SizedBox(height: 28),
+          ElevatedButton(
+            onPressed: submitting ? null : submit, 
+            child: submitting
+              ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                    : const Text('Simulate Payment Received'),
           ),
-          SizedBox(height: 20),
-          submitting
-            ? CircularProgressIndicator()
-            : ElevatedButton(onPressed: submit, child: Text('Simulate Payment Received'))
         ],
       ),
     ),
