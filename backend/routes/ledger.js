@@ -5,7 +5,7 @@ const { isPositiveInt, isValidAmount, requireValidIdParam } = require('../middle
 module.exports = (pool) => {
     const router = express.Router();
 
-    router.post('/transfers/send', async (req, res) => {
+    router.post('/transfers/send', async (req, res, next) => {
             const { vendor_id, amount: rawAmount } = req.body;
 
             if(!isPositiveInt(vendor_id)) {
@@ -27,7 +27,6 @@ module.exports = (pool) => {
                     [vendor_id]
                 );
 
-                const [vendorRows] = await pool.query(`SELECT verification_status FROM vendors WHERE id = ?`, [vendor_id]);
                 if (!vendorRows.length) {
                     return res.status(404).json({ error: 'Vendor not found' });
                 }
@@ -68,7 +67,7 @@ module.exports = (pool) => {
                 );
                 await conn.query(`UPDATE bank_accounts SET balance = balance - ? WHERE owner_type = 'buyer'`, [amount]);
                 await conn.query(
-                    `UPDATE bank_accounts SET balance = balance + / WHERE owner_type = 'vendor' and vendor_id = ?`,
+                    `UPDATE bank_accounts SET balance = balance + ? WHERE owner_type = 'vendor' and vendor_id = ?`,
                     [netAmount, vendor_id]
                 );
 
@@ -121,7 +120,7 @@ module.exports = (pool) => {
         }
     });
 
-    router.get('/accounts/buyer', requireValidIdParam, async (req, res, next) => {
+    router.get('/accounts/buyer', async (req, res, next) => {
         try {
             const [rows] = await pool.query( `SELECT balance FROM bank_accounts WHERE owner_type = 'buyer'`);
             res.json({ balance: rows[0]?.balance ?? 0 });

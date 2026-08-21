@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'theme.dart';
 import 'api_service.dart';
+import 'splash_screen.dart';
 import 'screens/payout_screen.dart';
 import 'screens/vendor_form_screen.dart';
+import 'screens//send_money_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
     title: 'Vendor Payouts',
     theme: AppTheme.dark,
-    home: VendorListScreen()
+    home: SplashScreen(),
     );
 }
 
@@ -49,7 +51,19 @@ class _VendorListScreenState extends State<VendorListScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Vendors')),
+    appBar: AppBar(
+      title: const Text('Vendors'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.send_rounded),
+          tooltip: 'Send Money',
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => SendMoneyScreen())
+          )
+        )
+      ],
+    ),
     body: RefreshIndicator(
       color: AppTheme.accent,
       backgroundColor: AppTheme.surface,

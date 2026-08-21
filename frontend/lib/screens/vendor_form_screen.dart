@@ -9,8 +9,8 @@ class VendorFormScreen extends StatefulWidget{
 }
 
 class _VendorFormScreenState extends State<VendorFormScreen> {
-  final nameCtrl = TextEditingController();
-  final infoCtrl = TextEditingController();
+  final TextEditingController nameCtrl = TextEditingController();
+  final TextEditingController infoCtrl = TextEditingController();
   bool submitting = false;
 
   void submit() async {

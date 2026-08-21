@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme.dart';
-import '../app_snackbar.dart';
-import '../api_service.dart';
+import 'package:frontend/theme.dart';
+import 'package:frontend/app_snackbar.dart';
+import 'package:frontend/api_service.dart';
 
 class SendMoneyScreen extends StatefulWidget{
   @override

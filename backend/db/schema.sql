@@ -42,5 +42,13 @@ CREATE TABLE bank_accounts (
     FOREIGN KEY (vendor_id) REFERENCES vendors(id)
 );
 
-INSERT INTO bank_accounts (owner_type, balance) VALUES ('buyer', 10000.00);
+CREATE TABLE buyers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    account_number VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE bank_accounts ADD COLUMN buyer_id INT NULL;
+ALTER TABLE bank_accounts ADD FOREIGN KEY (buyer_id) REFERENCES buyers(id);
 

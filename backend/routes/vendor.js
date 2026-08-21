@@ -39,7 +39,7 @@ module.exports = (pool) => {
         try{ 
             const { status } = req.body;
             const allowedStatuses = ['verified', 'unverified', 'pending'];
-            if(!isOneOf(status.allowedStatuses)) {
+            if(!isOneOf(status, allowedStatuses)) {
                 return res.status(400).json({ error: `status must be one of: ${allowedStatuses.join(', ')}` });
             }
 
