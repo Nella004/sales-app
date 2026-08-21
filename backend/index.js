@@ -20,7 +20,6 @@ const moneyMovementLimiter = rateLimit({
     message: { error: 'Too many requests - please slow down.'},
 });
 app.use('/api/transfers', moneyMovementLimiter);
-app.use('/api,vendors', moneyMovementLimiter);
 app.use('/api/webhooks', moneyMovementLimiter);
 
 const pool = mysql.createPool({

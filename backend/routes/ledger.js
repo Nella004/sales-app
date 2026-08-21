@@ -6,8 +6,11 @@ module.exports = (pool) => {
     const router = express.Router();
 
     router.post('/transfers/send', async (req, res, next) => {
-            const { vendor_id, amount: rawAmount } = req.body;
+            const { buyer_id, vendor_id, amount: rawAmount } = req.body;
 
+            if(!isPositiveInt(buyer_id)) {
+                return res.status(400).json({ error: 'Invalid buyer_id' });
+            }
             if(!isPositiveInt(vendor_id)) {
                 return res.status(400).json({ error: 'Invalid vendor_id' });
             }
@@ -28,15 +31,22 @@ module.exports = (pool) => {
                 );
 
                 if (!vendorRows.length) {
+                    await conn.rollback();
                     return res.status(404).json({ error: 'Vendor not found' });
                 }
                 if (vendorRows[0].verification_status !=='verified') {
+                    await conn.rollback();
                     return res.status(403).json({ error: 'Vendor not verified - cannot receive funds'});
                 }
 
                 const [buyerRows] = await conn.query(
-                    `SELECT balance FROM bank_accounts WHERE owner_type = 'buyer' FOR UPDATE`
+                    `SELECT balance FROM bank_accounts WHERE owner_type = 'buyer' FOR UPDATE`,
+                    [buyer_id]
                 );
+                if (!buyerRows.length) {
+                    await conn.rollback();
+                    return res.status(403).json({ error: 'Buyer account not found'});
+                }
 
                 const buyerBalance = Number(buyerRows[0].balance);
                 if (buyerBalance < amount) {
@@ -66,6 +76,7 @@ module.exports = (pool) => {
                     [vendor_id, netAmount, fee, transfer.transfer_id]
                 );
                 await conn.query(`UPDATE bank_accounts SET balance = balance - ? WHERE owner_type = 'buyer'`, [amount]);
+
                 await conn.query(
                     `UPDATE bank_accounts SET balance = balance + ? WHERE owner_type = 'vendor' and vendor_id = ?`,
                     [netAmount, vendor_id]
@@ -120,14 +131,6 @@ module.exports = (pool) => {
         }
     });
 
-    router.get('/accounts/buyer', async (req, res, next) => {
-        try {
-            const [rows] = await pool.query( `SELECT balance FROM bank_accounts WHERE owner_type = 'buyer'`);
-            res.json({ balance: rows[0]?.balance ?? 0 });
-        } catch (err) {
-            next(err);
-        }
-    });
 
     router.get('/vendors/:id/bank-balance', requireValidIdParam, async (req, res, next) =>{
         try {

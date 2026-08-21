@@ -1,10 +1,18 @@
 const express = require('express');
 const { isNonEmptyString, isOneOf, requireValidIdParam } = require('../middleware/validate');
 
+const accountCreationLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many account creation requests - please slow down'},
+});
+
 module.exports = (pool) => {
     const router = express.Router();
 
-    router.post('/vendors', async (req, res, next) => {
+    router.post('/vendors', accountCreationLimiter, async (req, res, next) => {
         try{
             const { name, business_info } = req.body;
 
@@ -28,7 +36,7 @@ module.exports = (pool) => {
             await pool.query(
                 `INSERT INTO bank_accounts (owner_type, vendor_id, balance) VALUES ('vendor', ?, 0.00)`,
                 [result.insertId]
-            )
+            );
             res.json({ id: result.insertId, name: name.trim(), account_number, verification_status: 'pending' });
         } catch (err) {
             next(err);
