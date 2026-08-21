@@ -34,3 +34,13 @@ CREATE TABLE processor_records (
     FOREIGN KEY (vendor_id) REFERENCES vendors(id)
 );
 
+CREATE TABLE bank_accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    owner_type VARCHAR(10) NOT NULL, 
+    vendor_id INT NULL,
+    balance DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (vendor_id) REFERENCES vendors(id)
+);
+
+INSERT INTO bank_accounts (owner_type, balance) VALUES ('buyer', 10000.00);
+

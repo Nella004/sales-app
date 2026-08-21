@@ -11,7 +11,6 @@ class VendorFormScreen extends StatefulWidget{
 class _VendorFormScreenState extends State<VendorFormScreen> {
   final nameCtrl = TextEditingController();
   final infoCtrl = TextEditingController();
-  final idCtrl = TextEditingController();
   bool submitting = false;
 
   void submit() async {
@@ -22,7 +21,7 @@ class _VendorFormScreenState extends State<VendorFormScreen> {
     setState(() => submitting = true);
 
     try {
-      await ApiService.submitVendor(nameCtrl.text, infoCtrl.text, idCtrl.text);
+      await ApiService.submitVendor(nameCtrl.text, infoCtrl.text);
       if (mounted) Navigator.pop(context, true); //so true = refresh list on return
     } catch (e) {
       AppSnackbar.error(context, 'Failed to submit: $e');
@@ -50,11 +49,10 @@ class _VendorFormScreenState extends State<VendorFormScreen> {
             style: const TextStyle(color: AppTheme.textPrimary),
             decoration: InputDecoration(labelText: 'Business Info', prefixIcon: Icon(Icons.info_outline_rounded)),
           ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: idCtrl,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(labelText: 'ID number', prefixIcon: Icon(Icons.badge_outlined)),
+          const SizedBox(height: 8),
+          Text(
+            'An account number will be generated automatically.',
+            style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 28),
           ElevatedButton(
